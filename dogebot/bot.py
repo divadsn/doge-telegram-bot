@@ -21,7 +21,7 @@ class DogeBot(object):
         self.chats = {}
 
         self.image = Image.open("doge.jpg")
-        self.font = ImageFont.truetype("comicsans.ttf", 48)
+        self.font = ImageFont.truetype("comicsans.ttf", 52)
         self.modifiers = ["so", "such", "many", "much", "very"]
 
     @events.register(events.NewMessage(incoming=True, forwards=False, pattern="/doge"))
@@ -74,7 +74,7 @@ class DogeBot(object):
 
         for word in message.raw_text.lower().split():
             # Exclude any non-alphabetical words, @mentions, letters, non-words and duplicates
-            if not word.isalpha() or word.startswith("@") or len(word) < 2 or len(word) > 27 or word in words:
+            if not word.isalpha() or word.startswith("@") or len(word) < 4 or len(word) > 27 or word in words:
                 continue
 
             # Delete first word if the list is larger or equal 20
