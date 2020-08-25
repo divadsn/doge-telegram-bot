@@ -31,6 +31,11 @@ class DogeBot(object):
     async def command_handler(self, event):
         words = list(self.chats[event.chat_id])
 
+        # Check if we have at least 4 unique words
+        if len(words) < 4:
+            await event.message.reply(message="I need at least 4 words to create an image!")
+            return
+
         # Order the list using random
         random.shuffle(words)
 
