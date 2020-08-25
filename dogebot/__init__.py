@@ -8,6 +8,4 @@ logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 APP_ID = os.getenv("APP_ID", None)
 APP_HASH = os.getenv("APP_HASH", None)
-
-# TODO: First setup wizard + verification
-PHONE_NUMBER = os.getenv("PHONE_NUMBER", None)
+BOT_TOKEN = os.getenv("BOT_TOKEN", None)

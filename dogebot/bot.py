@@ -4,41 +4,32 @@ import random
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
 
-from dogebot.drawmeme import DogeImage
+from dogebot.collection import MaxSizeList
+#from dogebot.drawmeme import DogeImage
+
 from telethon import TelegramClient, events
 
 
 logger = logging.getLogger(__name__)
 
+modifiers = ["so", "such", "many", "much", "very"]
+
 class DogeBot(object):
 
-    def __init__(self, app_id, app_hash, phone_number):
+    def __init__(self, app_id, app_hash, bot_token):
         self.client = TelegramClient("dogebot", app_id, app_hash)
         self.client.add_event_handler(self.command_handler)
-        self.phone_number = phone_number
+        self.client.add_event_handler(self.word_handler)
+
+        self.bot_token = bot_token
+        self.chats = {}
+
         self.image = Image.open("doge.jpg")
         self.font = ImageFont.truetype("comicsans.ttf", 48)
 
     @events.register(events.NewMessage(incoming=True, forwards=False, pattern="/doge"))
     async def command_handler(self, event):
-        words = set()
-
-        # Get past messages in the group and select ~50 unique words
-        async for message in self.client.iter_messages(event.chat_id):
-            if message.raw_text.startswith("/"):
-                continue
-
-            for word in message.raw_text.lower().split():
-                # Exclude any non-alphabetical words and @mentions
-                if not word.isalpha() or word.startswith("@"):
-                    continue
-
-                words.add(word)
-
-            if len(words) >= 50:
-                break
-
-        words = list(words)
+        words = list(self.chats[event.chat_id])
 
         # Order the list using random
         random.shuffle(words)
@@ -65,8 +56,36 @@ class DogeBot(object):
         # Close any open I/O from memory
         result.close()
 
+    @events.register(events.NewMessage(incoming=True))
+    async def word_handler(self, event):
+        message = event.message
+
+        # Ignore any command related messages starting with /
+        if message.raw_text.startswith("/"):
+            return
+
+        # Check if we have a list already for this chat in memory
+        if event.chat_id in self.chats:
+            words = self.chats[event.chat_id]
+        else:
+            words = []
+
+        for word in message.raw_text.lower().split():
+            # Exclude any non-alphabetical words, @mentions and duplicates
+            if not word.isalpha() or word.startswith("@") or word in words:
+                continue
+
+            # Delete first word if the list is larger or equal 50
+            if len(words) >= 50:
+                words.pop(0)
+
+            words.append(word)
+
+        # Store updated word list for this chat
+        self.chats[event.chat_id] = words
+
     async def start(self):
-        await self.client.start(phone=self.phone_number)
+        await self.client.start(bot_token=self.bot_token)
         logger.info("Bot started!")
 
         # wait for incoming messages/actions
