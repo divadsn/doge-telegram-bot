@@ -1,3 +1,3 @@
-- [ ] Create `DogeImage` class to handle text position alignment
+- [X] Create `DogeImage` class to handle text position alignment
 - [X] Find a solution to select words as a bot (`iter_messages` is not available via bot API)
 - [ ] Add a way to configure bot via `config.yml`

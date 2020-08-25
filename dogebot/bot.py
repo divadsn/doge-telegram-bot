@@ -2,17 +2,13 @@ import logging
 import random
 
 from io import BytesIO
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageFont
 
-from dogebot.collection import MaxSizeList
-#from dogebot.drawmeme import DogeImage
-
+from dogebot.doge import DogeImage
 from telethon import TelegramClient, events
-
 
 logger = logging.getLogger(__name__)
 
-modifiers = ["so", "such", "many", "much", "very"]
 
 class DogeBot(object):
 
@@ -26,6 +22,7 @@ class DogeBot(object):
 
         self.image = Image.open("doge.jpg")
         self.font = ImageFont.truetype("comicsans.ttf", 48)
+        self.modifiers = ["so", "such", "many", "much", "very"]
 
     @events.register(events.NewMessage(incoming=True, forwards=False, pattern="/doge"))
     async def command_handler(self, event):
@@ -40,7 +37,7 @@ class DogeBot(object):
         random.shuffle(words)
 
         # Shuffle those modifiers too
-        random.shuffle(modifiers)
+        random.shuffle(self.modifiers)
 
         # Create image canvas using doge template
         image = DogeImage(self.image.copy(), self.font)
@@ -48,7 +45,7 @@ class DogeBot(object):
         
         # Select 4 phrases + wow
         for i in range(4):
-            image.add_phrase(modifiers[i], words[i])
+            image.add_phrase(self.modifiers[i], words[i])
 
         # Save image to BytesIO
         result = BytesIO()
@@ -76,8 +73,8 @@ class DogeBot(object):
             words = []
 
         for word in message.raw_text.lower().split():
-            # Exclude any non-alphabetical words, @mentions and duplicates
-            if not word.isalpha() or word.startswith("@") or word in words:
+            # Exclude any non-alphabetical words, @mentions, letters and duplicates
+            if not word.isalpha() or word.startswith("@") or len(word) < 2 or word in words:
                 continue
 
             # Delete first word if the list is larger or equal 50
