@@ -73,12 +73,12 @@ class DogeBot(object):
             words = []
 
         for word in message.raw_text.lower().split():
-            # Exclude any non-alphabetical words, @mentions, letters and duplicates
-            if not word.isalpha() or word.startswith("@") or len(word) < 2 or word in words:
+            # Exclude any non-alphabetical words, @mentions, letters, non-words and duplicates
+            if not word.isalpha() or word.startswith("@") or len(word) < 2 or len(word) > 27 or word in words:
                 continue
 
-            # Delete first word if the list is larger or equal 50
-            if len(words) >= 50:
+            # Delete first word if the list is larger or equal 20
+            if len(words) >= 20:
                 words.pop(0)
 
             words.append(word)
