@@ -4,8 +4,10 @@ import random
 from io import BytesIO
 from PIL import Image, ImageFont
 
-from dogebot.doge import DogeImage
 from telethon import TelegramClient, events
+
+from dogebot.doge import DogeImage
+from dogebot.utils import get_sender_name
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +28,8 @@ class DogeBot(object):
 
     @events.register(events.NewMessage(incoming=True, forwards=False, pattern="/doge"))
     async def command_handler(self, event):
+        logger.info(f"User {get_sender_name(await event.get_sender())} issued command: {event.message.raw_text}")
+
         words = list(self.chats[event.chat_id])
 
         # Check if we have at least 4 unique words
