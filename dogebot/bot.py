@@ -86,8 +86,8 @@ class DogeBot(object):
             if not word.isalpha() or word.startswith("@") or len(word) < 4 or len(word) > 27:
                 continue
 
-            # Delete first word if the list is larger or equal 30
-            if len(words) >= 30:
+            # Delete first word if the list is larger or equal 20
+            if len(words) >= 20:
                 words.pop(0)
 
             words.append(word)
