@@ -30,6 +30,11 @@ class DogeBot(object):
     async def command_handler(self, event):
         logger.info(f"User {get_sender_name(await event.get_sender())} issued command: {event.message.raw_text}")
 
+        # Check if we have a word list for this chat
+        if event.chat_id not in self.chats:
+            await event.message.reply(message="I don't have any words written down for this chat yet!")
+            return
+
         words = list(self.chats[event.chat_id])
 
         # Check if we have at least 4 unique words
